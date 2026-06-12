@@ -1,0 +1,99 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Book a Session | Dream Tattoo & Photography{% endblock %}
+
+{% block content %}
+<section class="section-padding bg-black text-center mt-5">
+    <div class="container pt-4">
+        <h1 class="display-4 text-light">Book Your <span>Session</span></h1>
+        <p class="text-muted max-width-600 mx-auto">Fill out the details below to request a booking slot. Our team will contact you on WhatsApp or call to confirm and discuss advance payments.</p>
+    </div>
+</section>
+
+<!-- Booking Form Section -->
+<section class="section-padding bg-dark">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-panel p-5">
+                    {% if success_message %}
+                        <div class="alert alert-success bg-success-subtle text-success border border-success-subtle p-4 mb-4 rounded-3 text-center">
+                            <h4 class="alert-heading fw-bold mb-2"><i class="bi bi-check-circle-fill me-2"></i>Booking Submitted Successfully!</h4>
+                            <p class="mb-0">{{ success_message }}</p>
+                            <div class="mt-4">
+                                <a href="{% url 'core:home' %}" class="btn btn-outline-success">Return Home</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <form method="POST" action="{% url 'core:book_request' %}">
+                            {% csrf_token %}
+                            
+                            <h3 class="text-light mb-4 pb-2 border-bottom border-secondary">1. Personal Information</h3>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label form-label-custom">Full Name</label>
+                                    <input type="text" name="name" class="form-control form-glass" placeholder="Enter your name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label form-label-custom">Mobile Number</label>
+                                    <input type="tel" name="mobile" class="form-control form-glass" placeholder="Enter mobile number" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label form-label-custom">Email Address</label>
+                                    <input type="email" name="email" class="form-control form-glass" placeholder="name@example.com">
+                                </div>
+                            </div>
+
+                            <h3 class="text-light mb-4 pb-2 border-bottom border-secondary">2. Booking Details</h3>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label form-label-custom">Select Service</label>
+                                    <select name="service" class="form-select form-glass" required>
+                                        <option value="" disabled selected>-- Choose Service --</option>
+                                        {% for s in services %}
+                                            <option value="{{ s.id }}" {% if selected_service_id == s.id|stringformat:"s" %}selected{% endif %}>{{ s.name }} ({{ s.category }})</option>
+                                        {% empty %}
+                                            <option value="Wedding Photography">Wedding Photography</option>
+                                            <option value="Pre-Wedding Shoot">Pre-Wedding Shoot</option>
+                                            <option value="Baby Shoot">Baby Shoot</option>
+                                            <option value="Candid Photography">Candid Photography</option>
+                                            <option value="Drone Photography">Drone Photography</option>
+                                            <option value="Tattoo Session">Tattoo Session</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label form-label-custom">Event / Session Date</label>
+                                    <input type="date" name="date" class="form-control form-glass" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label form-label-custom">Select Package</label>
+                                    <select name="package" class="form-select form-glass" required>
+                                        <option value="Basic">Basic Package</option>
+                                        <option value="Premium" selected>Premium Package</option>
+                                        <option value="Luxury">Luxury Package</option>
+                                        <option value="Custom">Custom Package</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label form-label-custom">Advance Payment Intended (₹)</label>
+                                    <input type="number" name="advance_payment" class="form-control form-glass" placeholder="e.g. 5000" min="0" value="0">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label form-label-custom">Event Location / Venue Details</label>
+                                    <textarea name="location" class="form-control form-glass" rows="3" placeholder="Enter venue details or studio address" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-5">
+                                <button type="submit" class="btn btn-gold-fill px-5 py-3 w-100">Submit Booking Request</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

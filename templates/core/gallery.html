@@ -1,0 +1,301 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Gallery | Dream Tattoo & Photography{% endblock %}
+
+{% block content %}
+<section class="section-padding bg-black text-center mt-5">
+    <div class="container pt-4">
+        <h1 class="display-4 text-light">Studio <span>Gallery</span></h1>
+        <p class="text-muted max-width-600 mx-auto">Browse through our curated albums. Click the eye icon for a full-screen preview or download for offline viewing.</p>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="section-padding bg-dark">
+    <div class="container">
+
+        <!-- Category Filters -->
+        <div class="d-flex justify-content-center flex-wrap mb-5">
+            <button class="gallery-filter-btn active" data-filter="all">All Albums</button>
+            <button class="gallery-filter-btn" data-filter="Wedding">Wedding</button>
+            <button class="gallery-filter-btn" data-filter="Pre-Wedding">Pre-Wedding</button>
+            <button class="gallery-filter-btn" data-filter="Baby Shoot">Baby Shoot</button>
+            <button class="gallery-filter-btn" data-filter="Birthday">Birthday</button>
+            <button class="gallery-filter-btn" data-filter="Tattoo">Tattoo Designs</button>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="row g-4 gallery-grid">
+            {% for item in items %}
+                <div class="col-lg-4 col-md-6 gallery-item-container animate-fade-in" data-category="{{ item.category }}">
+                    <div class="gallery-item">
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                        <div class="gallery-overlay">
+                            <h4>{{ item.title }}</h4>
+                            <span>{{ item.get_category_display }}</span>
+                            <div class="gallery-actions">
+                                <a href="{{ item.image.url }}" class="lightbox-preview" data-title="{{ item.title }}" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ item.image.url }}" download="{{ item.title }}" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <!-- Beautiful Mockup Gallery items as fallbacks using local static files -->
+                
+                <!-- Item 1 - Wedding (Wedding.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Wedding">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Wedding.jpg' %}" alt="The Vow Exchange">
+                        <div class="gallery-overlay">
+                            <h4>The Vow Exchange</h4>
+                            <span>Wedding Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Wedding.jpg' %}" class="lightbox-preview" data-title="The Vow Exchange" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Wedding.jpg' %}" download="The Vow Exchange" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 - Pre-Wedding (Pre_wedding.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Pre-Wedding">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Pre_wedding.jpg' %}" alt="Golden Hour Love">
+                        <div class="gallery-overlay">
+                            <h4>Golden Hour Love</h4>
+                            <span>Pre-Wedding Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Pre_wedding.jpg' %}" class="lightbox-preview" data-title="Golden Hour Love" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Pre_wedding.jpg' %}" download="Golden Hour Love" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 - Tattoo (Tatto.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Tattoo">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Tatto.jpg' %}" alt="Sacred Mandala">
+                        <div class="gallery-overlay">
+                            <h4>Sacred Mandala</h4>
+                            <span>Tattoo Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Tatto.jpg' %}" class="lightbox-preview" data-title="Sacred Mandala" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Tatto.jpg' %}" download="Sacred Mandala" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 - Baby Shoot (Baby.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Baby Shoot">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Baby.jpg' %}" alt="Sweet Newborn Session">
+                        <div class="gallery-overlay">
+                            <h4>Newborn Angel</h4>
+                            <span>Baby Shoot Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Baby.jpg' %}" class="lightbox-preview" data-title="Newborn Angel" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Baby.jpg' %}" download="Newborn Angel" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4b - Baby Shoot (Baby (2).jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Baby Shoot">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Baby (2).jpg' %}" alt="Little Steps Milestones">
+                        <div class="gallery-overlay">
+                            <h4>Little Steps</h4>
+                            <span>Baby Shoot Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Baby (2).jpg' %}" class="lightbox-preview" data-title="Little Steps" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Baby (2).jpg' %}" download="Little Steps" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 - Wedding (Wedding (2).jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Wedding">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Wedding (2).jpg' %}" alt="The Royal Entry">
+                        <div class="gallery-overlay">
+                            <h4>The Royal Entry</h4>
+                            <span>Wedding Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Wedding (2).jpg' %}" class="lightbox-preview" data-title="The Royal Entry" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Wedding (2).jpg' %}" download="The Royal Entry" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 - Tattoo (Tatto (2).jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Tattoo">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Tatto (2).jpg' %}" alt="Midnight Wilderness">
+                        <div class="gallery-overlay">
+                            <h4>Midnight Wilderness</h4>
+                            <span>Tattoo Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Tatto (2).jpg' %}" class="lightbox-preview" data-title="Midnight Wilderness" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Tatto (2).jpg' %}" download="Midnight Wilderness" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 7 - Birthday (Birthday.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Birthday">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Birthday.jpg' %}" alt="Magical Birthday Theme">
+                        <div class="gallery-overlay">
+                            <h4>First Birthday Celebration</h4>
+                            <span>Birthday Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Birthday.jpg' %}" class="lightbox-preview" data-title="First Birthday Celebration" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Birthday.jpg' %}" download="First Birthday Celebration" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 7b - Birthday (Birthday1.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Birthday">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Birthday1.jpg' %}" alt="Fun Cake Smash Party">
+                        <div class="gallery-overlay">
+                            <h4>Cake Smash Session</h4>
+                            <span>Birthday Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Birthday1.jpg' %}" class="lightbox-preview" data-title="Cake Smash Session" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Birthday1.jpg' %}" download="Cake Smash Session" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 8 - Pre-Wedding (Pre_wedding (2).jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Pre-Wedding">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Pre_wedding (2).jpg' %}" alt="Mountain Romance">
+                        <div class="gallery-overlay">
+                            <h4>Mountain Romance</h4>
+                            <span>Pre-Wedding Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Pre_wedding (2).jpg' %}" class="lightbox-preview" data-title="Mountain Romance" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Pre_wedding (2).jpg' %}" download="Mountain Romance" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 9 - Wedding Rituals (Rituals - The Wedding Ceremony! 198 - 6071 _ Weddingplz.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Wedding">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Rituals - The Wedding Ceremony! 198 - 6071 _ Weddingplz.jpg' %}" alt="Wedding Rituals">
+                        <div class="gallery-overlay">
+                            <h4>Traditional Rituals</h4>
+                            <span>Wedding Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Rituals - The Wedding Ceremony! 198 - 6071 _ Weddingplz.jpg' %}" class="lightbox-preview" data-title="Traditional Rituals" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Rituals - The Wedding Ceremony! 198 - 6071 _ Weddingplz.jpg' %}" download="Traditional Rituals" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 10 - Tattoo Custom Ink (tatto (3).jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Tattoo">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/tatto (3).jpg' %}" alt="Custom Sketch Art">
+                        <div class="gallery-overlay">
+                            <h4>Custom Ink Art</h4>
+                            <span>Tattoo Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/tatto (3).jpg' %}" class="lightbox-preview" data-title="Custom Ink Art" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/tatto (3).jpg' %}" download="Custom Ink Art" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 11 - Wedding Elegance (Capturing Timeless Wedding Moments with Elegance.jpg) -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Wedding">
+                    <div class="gallery-item">
+                        <img src="{% static 'img/Capturing Timeless Wedding Moments with Elegance.jpg' %}" alt="Timeless Elegance">
+                        <div class="gallery-overlay">
+                            <h4>Timeless Elegance</h4>
+                            <span>Wedding Gallery</span>
+                            <div class="gallery-actions">
+                                <a href="{% static 'img/Capturing Timeless Wedding Moments with Elegance.jpg' %}" class="lightbox-preview" data-title="Timeless Elegance" title="View Photo">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% static 'img/Capturing Timeless Wedding Moments with Elegance.jpg' %}" download="Timeless Elegance" title="Download File">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

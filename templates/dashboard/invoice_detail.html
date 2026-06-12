@@ -1,0 +1,189 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Invoice #{{ invoice.invoice_number }} | Dream Studio{% endblock %}
+
+{% block dashboard_title %}
+    <h1 class="btn-print-hide">Invoice details</h1>
+    <p class="btn-print-hide">View generated invoice details, download PDF, print, or share via WhatsApp.</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        
+        <!-- Action bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 btn-print-hide">
+            <a href="{% url 'dashboard:billing' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to Billing</a>
+            <div>
+                <button onclick="window.print()" class="btn btn-gold-outline me-2"><i class="bi bi-printer me-2"></i>Print Invoice</button>
+                <a href="{% url 'dashboard:invoice_pdf' invoice.id %}" class="btn btn-gold-fill me-2"><i class="bi bi-file-pdf me-2"></i>Download PDF</a>
+                <a href="https://wa.me/91{{ invoice.customer_mobile }}?text=Hello%20{{ invoice.customer_name }},%20your%20invoice%20{{ invoice.invoice_number }}%20from%20Dream%20Studio%20for%20₹{{ invoice.grand_total }}%20is%20ready.%20Balance%20due:%20₹{{ invoice.balance_due }}.%20Kindly%20process%20payment.%20Thank%20you!" target="_blank" class="btn btn-success"><i class="bi bi-whatsapp me-2"></i>WhatsApp client</a>
+            </div>
+        </div>
+
+        <!-- Premium Invoice Container -->
+        <div class="invoice-container text-light">
+            <div class="invoice-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="invoice-title m-0">Dream Tattoo & Photography</h2>
+                    <p class="text-muted small m-0 mt-1">Premium Cinematography, Candid Captures & Hygienic Tattoos</p>
+                </div>
+                <div class="text-md-end">
+                    <h3 class="h5 text-warning m-0">INVOICE</h3>
+                    <div class="fw-bold">{{ invoice.invoice_number }}</div>
+                    <div class="small text-muted">Date: {{ invoice.created_at|date:"d M Y" }}</div>
+                </div>
+            </div>
+
+            <!-- Client & Studio details -->
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <h4 class="h6 text-warning uppercase-label mb-2">Billed To</h4>
+                    <div class="invoice-details-box">
+                        <div class="fw-bold fs-5 text-light">{{ invoice.customer_name }}</div>
+                        <div class="small mt-1"><i class="bi bi-telephone text-muted me-2"></i>{{ invoice.customer_mobile }}</div>
+                        {% if invoice.event_type %}
+                            <div class="small mt-1"><i class="bi bi-calendar-event text-muted me-2"></i>Event: {{ invoice.event_type }} ({{ invoice.event_date|date:"d M Y" }})</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="h6 text-warning uppercase-label mb-2">Studio Info</h4>
+                    <div class="invoice-details-box text-muted small">
+                        <div><strong>Dream Photography</strong></div>
+                        <div>Near police station, Mudalgi, Karnataka</div>
+                        <div>Phone: +91 73386 68173</div>
+                        <div>GSTIN: 29AAAAA1111A1Z1 (Karnataka Demo)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Line Items Table -->
+            <h4 class="h6 text-warning uppercase-label mt-5 mb-3">Service Charges Breakdown</h4>
+            <div class="table-responsive">
+                <table class="table table-dark table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th>Service Item Description</th>
+                            <th class="text-end">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if invoice.photography_charge > 0 %}
+                            <tr>
+                                <td>Photography Service Coverage</td>
+                                <td class="text-end">₹{{ invoice.photography_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.videography_charge > 0 %}
+                            <tr>
+                                <td>Cinematography & Videography Coverage</td>
+                                <td class="text-end">₹{{ invoice.videography_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.drone_charge > 0 %}
+                            <tr>
+                                <td>Aerial Drone Coverage (4K Capture)</td>
+                                <td class="text-end">₹{{ invoice.drone_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.led_wall_charge > 0 %}
+                            <tr>
+                                <td>LED Wall Event Display Backdrop</td>
+                                <td class="text-end">₹{{ invoice.led_wall_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.crane_charge > 0 %}
+                            <tr>
+                                <td>Crane / Jib Camera Setup</td>
+                                <td class="text-end">₹{{ invoice.crane_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.live_streaming_charge > 0 %}
+                            <tr>
+                                <td>Live Broadcasting / Youtube Streaming</td>
+                                <td class="text-end">₹{{ invoice.live_streaming_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.photo_frame_charge > 0 %}
+                            <tr>
+                                <td>Custom High-Resolution Photo Frames</td>
+                                <td class="text-end">₹{{ invoice.photo_frame_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.travel_charge > 0 %}
+                            <tr>
+                                <td>Travel, Logistics & Venue Overhead Charges</td>
+                                <td class="text-end">₹{{ invoice.travel_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if invoice.album_charge > 0 %}
+                            <tr>
+                                <td>Album Printing & Luxury Binding Services</td>
+                                <td class="text-end">₹{{ invoice.album_charge|floatformat:2 }}</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary Totals -->
+            <div class="row mt-4">
+                <div class="col-md-6 text-muted small d-flex align-items-center">
+                    <div>
+                        <div class="fw-bold mb-2 text-warning">Terms & Conditions:</div>
+                        <div>1. Advance payment is non-refundable.</div>
+                        <div>2. Invoices are subject to 18% standard photography GST.</div>
+                        <div>3. Balance payment is due upon raw photo deliveries.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="invoice-totals">
+                        <div class="invoice-total-row">
+                            <span class="text-muted">Total Charges:</span>
+                            <span>₹{{ invoice.subtotal|add:invoice.discount|floatformat:2 }}</span>
+                        </div>
+                        {% if invoice.discount > 0 %}
+                            <div class="invoice-total-row">
+                                <span class="text-muted">Discount Applied:</span>
+                                <span class="text-danger">-₹{{ invoice.discount|floatformat:2 }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="invoice-total-row">
+                            <span class="text-muted">Subtotal:</span>
+                            <span>₹{{ invoice.subtotal|floatformat:2 }}</span>
+                        </div>
+                        <div class="invoice-total-row">
+                            <span class="text-muted">GST Collected ({{ invoice.gst_rate }}%):</span>
+                            <span>₹{{ invoice.gst_amount|floatformat:2 }}</span>
+                        </div>
+                        <div class="invoice-total-row grand">
+                            <span>Grand Total:</span>
+                            <span>₹{{ invoice.grand_total|floatformat:2 }}</span>
+                        </div>
+                        <div class="invoice-total-row text-success mt-2">
+                            <span>Total Paid Amount:</span>
+                            <span>₹{{ invoice.paid_amount|floatformat:2 }}</span>
+                        </div>
+                        <div class="invoice-total-row text-danger fw-bold fs-5 pt-2 border-top border-secondary border-dashed">
+                            <span>Balance Outstanding:</span>
+                            <span>₹{{ invoice.balance_due|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment QR Code integration -->
+            <div class="mt-5 text-center pt-4 border-top border-secondary">
+                <div class="d-inline-block p-3 bg-white rounded-3 mb-2">
+                    <!-- Displaying simple mock UPI payment visual QR code frame -->
+                    <div style="width: 100px; height: 100px; background: repeating-linear-gradient(45deg, #000, #000 10px, #fff 10px, #fff 20px) no-repeat center center; background-size: cover; border: 4px solid #fff;"></div>
+                </div>
+                <div class="small text-muted">Scan to pay via UPI (BHIM/GPAY/PAYTM)</div>
+                <div class="small text-warning mt-1">UPI ID: 7338668173@ybl</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

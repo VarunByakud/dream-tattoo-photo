@@ -1,0 +1,191 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Home | Dream Tattoo & Photography{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <h1 class="display-3 text-light">Capture Your <span>Dreams</span></h1>
+        <p class="lead">Premium Photography Studio & Custom Tattoo Artistry in One Magical Creative Space.</p>
+        <div class="mt-4">
+            <a href="{% url 'core:book_request' %}" class="btn btn-gold-fill me-3 mb-2">Book a Session</a>
+            <a href="{% url 'core:services' %}" class="btn btn-gold-outline mb-2">Explore Services</a>
+        </div>
+    </div>
+</section>
+
+<!-- Studio Introduction -->
+<section class="section-padding bg-dark">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="glass-panel p-5">
+                    <h2 class="h1 text-light mb-4">Welcome to <span class="text-warning">Dream Studio</span></h2>
+                    <p class="text-muted leading-relaxed">At Dream Tattoo & Photography, we believe in preserving emotions and showcasing expressions. Whether it's the magical elegance of your wedding day, the joy of a new-born child, or a lifetime statement inked on your skin, our professionals ensure every detail is captured with artistry and premium precision.</p>
+                    <p class="text-muted leading-relaxed">With over 3+ years of experience, state-of-the-art drone and cinematic cameras, and safe, custom-designed hygienic tattoo procedures, we are your final destination for creative expression.</p>
+                    <div class="mt-4">
+                        <a href="{% url 'core:about' %}" class="btn btn-gold-outline">Our Story</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-4">
+                    <div class="col-6">
+                        <div class="glass-panel p-4 text-center">
+                            <i class="bi bi-camera-fill text-warning display-4 mb-3 d-block"></i>
+                            <h3 class="h5 text-light">13+ Services</h3>
+                            <p class="small text-muted mb-0">From weddings to custom tattoos</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-panel p-4 text-center">
+                            <i class="bi bi-emoji-smile-fill text-warning display-4 mb-3 d-block"></i>
+                            <h3 class="h5 text-light">1200+ Clients</h3>
+                            <p class="small text-muted mb-0">Happy Customer Reviews</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-panel p-4 text-center">
+                            <i class="bi bi-brush text-warning display-4 mb-3 d-block"></i>
+                            <h3 class="h5 text-light">500+ Tattoos</h3>
+                            <p class="small text-muted mb-0">Custom & sterile body art</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-panel p-4 text-center">
+                            <i class="bi bi-shield-check text-warning display-4 mb-3 d-block"></i>
+                            <h3 class="h5 text-light">100% Hygienic</h3>
+                            <p class="small text-muted mb-0">Safe skin-art practices</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Services Overview -->
+<section class="section-padding bg-black">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Featured <span>Specialties</span></h2>
+            <p class="section-subtitle">We offer a wide range of photography styles and body art customization tailored to meet your standards.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-panel service-card">
+                    <div class="service-icon-wrapper">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+                    <h3>Wedding & Pre-Wedding</h3>
+                    <p class="text-muted">Preserving the love, laughs, and emotional highlights of your wedding ceremonies through cinematic candid videography and traditional drone setups.</p>
+                    <a href="{% url 'core:services' %}" class="text-warning text-decoration-none">Learn More <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-panel service-card">
+                    <div class="service-icon-wrapper">
+                        <i class="bi bi-brush"></i>
+                    </div>
+                    <h3>Custom Tattoo Designing</h3>
+                    <p class="text-muted">Get custom, hygienic, and extremely detailed permanent skin designs from the most experienced local sketch artists.</p>
+                    <a href="{% url 'core:services' %}" class="text-warning text-decoration-none">Learn More <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="glass-panel service-card">
+                    <div class="service-icon-wrapper">
+                        <i class="bi bi-balloon-fill"></i>
+                    </div>
+                    <h3>Baby & Maternity Shoots</h3>
+                    <p class="text-muted">Celebrate early milestones with professional, comfortable, and beautifully themed maternity and infant studio photo shoots.</p>
+                    <a href="{% url 'core:services' %}" class="text-warning text-decoration-none">Learn More <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'core:services' %}" class="btn btn-gold-fill">View All Services</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="section-padding bg-dark">
+    <div class="container">
+        <div class="section-title">
+            <h2>Client <span>Testimonials</span></h2>
+            <p class="section-subtitle">Read what our happy customers have to say about their experience at Dream Studio.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-panel testimonial-card">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p>"Dream Studio managed the photography for our wedding. The candid photos are absolutely stunning, and the luxury leather album they printed was worth every rupee!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">R</div>
+                        <div class="author-details">
+                            <h5>Rahul & Neha</h5>
+                            <span>Wedding Session</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-panel testimonial-card">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p>"I got my first sleeve tattoo designed here. The designer was extremely patient, detailed, and hygienic. Recommended to everyone looking for custom ink."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">V</div>
+                        <div class="author-details">
+                            <h5>Varun Kumar</h5>
+                            <span>Tattoo Session</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-panel testimonial-card">
+                    <div class="text-warning mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p>"They did a themed outdoor photoshoot for my baby's first birthday. The team was fantastic with the baby, and the photos turned out so beautiful and warm."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">A</div>
+                        <div class="author-details">
+                            <h5>Anjali Sharma</h5>
+                            <span>Baby Shoot Session</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call To Action -->
+<section class="section-padding bg-black text-center">
+    <div class="container">
+        <h2 class="display-5 text-light mb-3">Ready to Create Something Beautiful?</h2>
+        <p class="text-muted max-width-600 mx-auto mb-4">Book your date today for a custom tattoo session or secure a slot for photography before dates fill up.</p>
+        <a href="{% url 'core:book_request' %}" class="btn btn-gold-fill px-5 py-3">Book Your Slot Now</a>
+    </div>
+</section>
+{% endblock %}

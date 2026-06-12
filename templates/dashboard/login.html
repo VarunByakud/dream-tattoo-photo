@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Dream Studio</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #080808;
+            color: #F8F9FA;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1A1A1A 0%, #050505 100%);
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(214, 175, 55, 0.15);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        .login-card:hover {
+            border-color: rgba(214, 175, 55, 0.4);
+            box-shadow: 0 15px 50px rgba(214, 175, 55, 0.1);
+        }
+        .logo-title {
+            font-family: 'Playfair Display', serif;
+            color: #D4AF37;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo-title span {
+            color: #fff;
+        }
+        .form-label-custom {
+            color: #D4AF37;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .form-control-custom {
+            background: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            color: #fff !important;
+            padding: 12px 18px;
+            border-radius: 8px;
+        }
+        .form-control-custom:focus {
+            background: rgba(0, 0, 0, 0.7) !important;
+            border-color: #D4AF37 !important;
+            box-shadow: 0 0 10px rgba(214, 175, 55, 0.2) !important;
+            outline: none;
+        }
+        .btn-gold {
+            background: #D4AF37;
+            color: #0A0A0A;
+            border: 1px solid #D4AF37;
+            padding: 12px;
+            border-radius: 25px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background: #F3E5AB;
+            box-shadow: 0 0 15px rgba(214, 175, 55, 0.4);
+            transform: translateY(-1px);
+        }
+        .btn-link-gold {
+            color: #D4AF37;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .btn-link-gold:hover {
+            color: #F3E5AB;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1 class="logo-title">Dream <span>Studio</span></h1>
+        
+        {% if error %}
+            <div class="alert alert-danger bg-danger-subtle text-danger border border-danger-subtle py-2 px-3 small rounded-3 mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
+            </div>
+        {% endif %}
+        
+        <form method="POST" action="{% url 'dashboard:login' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label form-label-custom">Username</label>
+                <input type="text" name="username" class="form-control form-control-custom" placeholder="Enter username" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label form-label-custom">Password</label>
+                <input type="password" name="password" class="form-control form-control-custom" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-gold mb-3">Sign In</button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <span class="small text-muted">Don't have an account?</span>
+            <a href="{% url 'dashboard:register' %}" class="btn-link-gold ms-1 small">Sign Up</a>
+        </div>
+        <div class="text-center mt-2">
+            <a href="{% url 'core:home' %}" class="small text-muted text-decoration-none"><i class="bi bi-arrow-left me-1"></i> Back to Home</a>
+        </div>
+    </div>
+
+</body>
+</html>

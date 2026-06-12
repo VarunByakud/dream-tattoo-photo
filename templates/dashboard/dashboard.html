@@ -1,0 +1,302 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard | Dream Studio{% endblock %}
+
+{% block dashboard_title %}
+    <h1>Studio Analytics</h1>
+    <p>Welcome back, here is the current operations summary.</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Metric Cards -->
+<div class="row g-4">
+    <div class="col-md-4 col-lg-2-4 col-xl">
+        <div class="metric-card">
+            <div class="metric-icon"><i class="bi bi-people"></i></div>
+            <div class="metric-value">{{ total_customers }}</div>
+            <div class="metric-label">Total Customers</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2-4 col-xl">
+        <div class="metric-card">
+            <div class="metric-icon"><i class="bi bi-calendar2-check"></i></div>
+            <div class="metric-value">{{ total_bookings }}</div>
+            <div class="metric-label">Total Bookings</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2-4 col-xl">
+        <div class="metric-card">
+            <div class="metric-icon"><i class="bi bi-currency-rupee text-success"></i></div>
+            <div class="metric-value">₹{{ total_revenue|floatformat:2 }}</div>
+            <div class="metric-label">Total Revenue</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-2-4 col-xl">
+        <div class="metric-card">
+            <div class="metric-icon"><i class="bi bi-exclamation-circle text-danger"></i></div>
+            <div class="metric-value">₹{{ pending_payments|floatformat:2 }}</div>
+            <div class="metric-label">Pending Payments</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-2-4 col-xl">
+        <div class="metric-card">
+            <div class="metric-icon"><i class="bi bi-journal-album text-warning"></i></div>
+            <div class="metric-value">{{ albums_in_progress }}</div>
+            <div class="metric-label">Albums In Progress</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row mt-5 g-4">
+    <div class="col-lg-8">
+        <div class="card-dashboard h-100">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-graph-up text-warning me-2"></i> Monthly Revenue & Bookings Trend</h3>
+            <div style="position: relative; height: 300px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card-dashboard h-100">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-pie-chart text-warning me-2"></i> Album Design Status</h3>
+            <div style="position: relative; height: 300px;">
+                <canvas id="albumChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Details Table -->
+<div class="row mt-5 g-4">
+    <!-- Recent Bookings -->
+    <div class="col-lg-6">
+        <div class="card-dashboard h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="h5 text-light m-0"><i class="bi bi-calendar-event text-warning me-2"></i> Recent Booking Requests</h3>
+                <a href="{% url 'dashboard:bookings' %}" class="btn btn-sm btn-gold-outline">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th class="mobile-toggle-col"></th>
+                            <th>Client</th>
+                            <th class="d-mobile-hidden">Service</th>
+                            <th class="d-mobile-hidden">Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                            <tr class="table-row-parent">
+                                <td class="mobile-toggle-col text-center">
+                                    <i class="bi bi-chevron-down toggle-icon"></i>
+                                </td>
+                                <td>{{ booking.customer_name }}</td>
+                                <td class="d-mobile-hidden">{{ booking.service.name }}</td>
+                                <td class="d-mobile-hidden">{{ booking.date|date:"d M Y" }}</td>
+                                <td>
+                                    <span class="badge badge-custom 
+                                        {% if booking.status == 'Pending' %}badge-pending
+                                        {% elif booking.status == 'Confirmed' %}badge-designing
+                                        {% elif booking.status == 'Completed' %}badge-completed
+                                        {% else %}badge-cancelled{% endif %}">
+                                        {{ booking.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="detail-row">
+                                <td colspan="5">
+                                    <div class="detail-content p-3">
+                                        <div class="row g-2">
+                                            <div class="col-6"><strong>Service:</strong> {{ booking.service.name }}</div>
+                                            <div class="col-6"><strong>Date:</strong> {{ booking.date|date:"d M Y" }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">No booking requests found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Albums -->
+    <div class="col-lg-6">
+        <div class="card-dashboard h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="h5 text-light m-0"><i class="bi bi-journal-album text-warning me-2"></i> Albums Design Status</h3>
+                <a href="{% url 'dashboard:albums' %}" class="btn btn-sm btn-gold-outline">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th class="mobile-toggle-col"></th>
+                            <th>Album</th>
+                            <th class="d-mobile-hidden">Client</th>
+                            <th class="d-mobile-hidden">Pages</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for album in active_albums %}
+                            <tr class="table-row-parent">
+                                <td class="mobile-toggle-col text-center">
+                                    <i class="bi bi-chevron-down toggle-icon"></i>
+                                </td>
+                                <td>{{ album.album_name }}</td>
+                                <td class="d-mobile-hidden">{{ album.client_name }}</td>
+                                <td class="d-mobile-hidden">{{ album.pages }} pages ({{ album.sheets }} sheets)</td>
+                                <td>
+                                    <span class="badge badge-custom 
+                                        {% if album.design_status == 'Pending' %}badge-pending
+                                        {% elif album.design_status == 'Designing' %}badge-designing
+                                        {% elif album.design_status == 'Completed' %}badge-completed
+                                        {% else %}badge-delivered{% endif %}">
+                                        {{ album.design_status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="detail-row">
+                                <td colspan="5">
+                                    <div class="detail-content p-3">
+                                        <div class="row g-2">
+                                            <div class="col-6"><strong>Client:</strong> {{ album.client_name }}</div>
+                                            <div class="col-6"><strong>Pages:</strong> {{ album.pages }} pages ({{ album.sheets }} sheets)</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">No active albums in progress.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Embed chart data
+        const months = {{ chart_months|safe }};
+        const revenues = {{ chart_revenues|safe }};
+        const bookingsCount = {{ chart_bookings_count|safe }};
+        
+        // Revenue Chart (Line + Bar combo)
+        const ctxRev = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctxRev, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Monthly Revenue (₹)',
+                        data: revenues,
+                        backgroundColor: 'rgba(214, 175, 55, 0.6)',
+                        borderColor: '#D4AF37',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Bookings Count',
+                        data: bookingsCount,
+                        type: 'line',
+                        borderColor: '#F3E5AB',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#F8F9FA' }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#B0B0B0' }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#B0B0B0' },
+                        title: {
+                            display: true,
+                            text: 'Revenue (₹)',
+                            color: '#D4AF37'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#B0B0B0' },
+                        title: {
+                            display: true,
+                            text: 'Bookings',
+                            color: '#F3E5AB'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Album Chart (Doughnut)
+        const ctxAlb = document.getElementById('albumChart').getContext('2d');
+        new Chart(ctxAlb, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Designing', 'Completed', 'Delivered'],
+                datasets: [{
+                    data: [
+                        {{ album_stats.Pending|default:0 }},
+                        {{ album_stats.Designing|default:0 }},
+                        {{ album_stats.Completed|default:0 }},
+                        {{ album_stats.Delivered|default:0 }}
+                    ],
+                    backgroundColor: [
+                        '#ffc107',
+                        '#17a2b8',
+                        '#28a745',
+                        '#6c757d'
+                    ],
+                    borderColor: '#0F0F0F',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#F8F9FA' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

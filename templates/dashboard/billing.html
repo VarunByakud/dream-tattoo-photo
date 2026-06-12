@@ -1,0 +1,266 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Billing & Invoices | Dream Studio{% endblock %}
+
+{% block dashboard_title %}
+    <h1>GST Billing System</h1>
+    <p>Generate professional GST invoices, track payments, and review outstanding balances.</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <!-- Invoice Lists (7 columns) -->
+    <div class="col-lg-7">
+        <div class="card-dashboard h-100">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-file-earmark-text text-warning me-2"></i> Invoices Log</h3>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th class="mobile-toggle-col"></th>
+                            <th>Inv Number</th>
+                            <th class="d-mobile-hidden">Customer</th>
+                            <th class="d-mobile-hidden">Type</th>
+                            <th>Total (₹)</th>
+                            <th>Status</th>
+                            <th class="d-mobile-hidden">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in invoices %}
+                            <tr class="table-row-parent">
+                                <td class="mobile-toggle-col">
+                                    <i class="bi bi-chevron-down toggle-icon"></i>
+                                </td>
+                                <td>
+                                    <a href="{% url 'dashboard:invoice_detail' inv.id %}" class="fw-bold text-warning text-decoration-none">{{ inv.invoice_number }}</a>
+                                    <div class="small text-muted">{{ inv.created_at|date:"d M Y" }}</div>
+                                </td>
+                                <td class="d-mobile-hidden">
+                                    <div>{{ inv.customer_name }}</div>
+                                    <span class="small text-muted">{{ inv.customer_mobile }}</span>
+                                </td>
+                                <td class="d-mobile-hidden">
+                                    <span class="badge bg-secondary">{{ inv.invoice_type }}</span>
+                                </td>
+                                <td>
+                                    <div>₹{{ inv.grand_total|floatformat:2 }}</div>
+                                    <span class="small text-danger d-mobile-hidden">Due: ₹{{ inv.balance_due|floatformat:2 }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-custom 
+                                        {% if inv.payment_status == 'Pending' %}badge-pending
+                                        {% elif inv.payment_status == 'Partial' %}badge-partial
+                                        {% else %}badge-completed{% endif %}">
+                                        {{ inv.payment_status }}
+                                    </span>
+                                </td>
+                                <td class="d-mobile-hidden">
+                                    <div class="btn-group">
+                                        <a href="{% url 'dashboard:invoice_detail' inv.id %}" class="btn btn-sm btn-outline-warning" title="View & Print"><i class="bi bi-eye"></i></a>
+                                        <a href="{% url 'dashboard:invoice_pdf' inv.id %}" class="btn btn-sm btn-outline-info" title="Download PDF"><i class="bi bi-file-pdf"></i></a>
+                                        <a href="https://wa.me/91{{ inv.customer_mobile }}?text=Hello%20{{ inv.customer_name }},%20your%20invoice%20{{ inv.invoice_number }}%20from%20Dream%20Studio%20for%20₹{{ inv.grand_total }}%20is%20ready.%20Balance%20due:%20₹{{ inv.balance_due }}.%20Kindly%20process%20payment.%20Thank%20you!" target="_blank" class="btn btn-sm btn-outline-success" title="Share WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="detail-row">
+                                <td colspan="10">
+                                    <div class="detail-content p-3 rounded">
+                                        <div class="mb-2"><strong>Client:</strong> {{ inv.customer_name }} (<span class="text-muted">{{ inv.customer_mobile }}</span>)</div>
+                                        <div class="mb-2"><strong>Invoice Category:</strong> <span class="badge bg-secondary">{{ inv.invoice_type }}</span></div>
+                                        <div class="mb-3">
+                                            <strong>Financial Breakdown:</strong>
+                                            <span class="text-light me-2">Grand Total: ₹{{ inv.grand_total }}</span>
+                                            <span class="text-danger fw-bold">Balance Due: ₹{{ inv.balance_due }}</span>
+                                        </div>
+                                        <!-- Actions -->
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'dashboard:invoice_detail' inv.id %}" class="btn btn-sm btn-outline-warning px-3"><i class="bi bi-eye me-1"></i> View & Print</a>
+                                            <a href="{% url 'dashboard:invoice_pdf' inv.id %}" class="btn btn-sm btn-outline-info px-3"><i class="bi bi-file-pdf me-1"></i> Download PDF</a>
+                                            <a href="https://wa.me/91{{ inv.customer_mobile }}?text=Hello%20{{ inv.customer_name }},%20your%20invoice%20{{ inv.invoice_number }}%20from%20Dream%20Studio%20for%20₹{{ inv.grand_total }}%20is%20ready.%20Balance%20due:%20₹{{ inv.balance_due }}.%20Kindly%20process%20payment.%20Thank%20you!" target="_blank" class="btn btn-sm btn-outline-success px-3"><i class="bi bi-whatsapp me-1"></i> WhatsApp</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">No invoices generated yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS Bill Generator (5 columns) -->
+    <div class="col-lg-5">
+        <div class="card-dashboard">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-receipt text-warning me-2"></i> Create Invoice</h3>
+            
+            <form id="billingForm" method="POST" action="{% url 'dashboard:billing_create' %}">
+                {% csrf_token %}
+                
+                <!-- Client Details -->
+                <h4 class="h6 text-warning mb-3">Client Information</h4>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label form-label-dashboard">Customer Name</label>
+                        <input type="text" name="customer_name" class="form-control form-control-dashboard" placeholder="Full Name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label form-label-dashboard">Mobile Number</label>
+                        <input type="tel" name="customer_mobile" class="form-control form-control-dashboard" placeholder="10 digits" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label form-label-dashboard">Event Type</label>
+                        <input type="text" name="event_type" class="form-control form-control-dashboard" placeholder="e.g. Wedding Shoot">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label form-label-dashboard">Event Date</label>
+                        <input type="date" name="event_date" class="form-control form-control-dashboard">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label form-label-dashboard">Invoice Type</label>
+                        <select name="invoice_type" class="form-select form-control-custom">
+                            <option value="Photography" selected>Photography Invoice</option>
+                            <option value="Album">Album Invoice</option>
+                            <option value="Combined">Combined Invoice</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Line Charges -->
+                <h4 class="h6 text-warning mb-3 mt-4">Services / Charges (₹)</h4>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Photography</label>
+                        <input type="number" name="photography_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Videography</label>
+                        <input type="number" name="videography_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Drone Capt.</label>
+                        <input type="number" name="drone_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">LED Wall</label>
+                        <input type="number" name="led_wall_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Crane Support</label>
+                        <input type="number" name="crane_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Live Stream</label>
+                        <input type="number" name="live_streaming_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Photo Frame</label>
+                        <input type="number" name="photo_frame_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Travel Exp.</label>
+                        <input type="number" name="travel_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-label-dashboard">Album Print</label>
+                        <input type="number" name="album_charge" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                    </div>
+                </div>
+
+                <!-- Price Summary -->
+                <h4 class="h6 text-warning mb-3 mt-4">Pricing Calculations</h4>
+                <div class="glass-panel p-3 mb-4">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label form-label-dashboard">Discount (₹)</label>
+                            <input type="number" id="discount" name="discount" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label form-label-dashboard">Paid Amount (₹)</label>
+                            <input type="number" id="paid_amount" name="paid_amount" class="form-control form-control-dashboard bill-calc" value="0" min="0">
+                        </div>
+                    </div>
+                    <div class="mt-3 border-top border-secondary pt-3 small">
+                        <div class="d-flex justify-content-between text-muted mb-1">
+                            <span>Subtotal (Charges - Disc):</span>
+                            <span>₹<span id="lblSubtotal">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted mb-1">
+                            <span>GST Amount (18%):</span>
+                            <span>₹<span id="lblGst">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between text-light fw-bold mb-1">
+                            <span>Grand Total:</span>
+                            <span class="text-warning">₹<span id="lblGrandTotal">0.00</span></span>
+                        </div>
+                        <div class="d-flex justify-content-between text-danger fw-bold">
+                            <span>Balance Due:</span>
+                            <span>₹<span id="lblBalanceDue">0.00</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-gold w-100 py-2">Generate & Save Invoice</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const calcs = document.querySelectorAll(".bill-calc");
+        const lblSubtotal = document.getElementById("lblSubtotal");
+        const lblGst = document.getElementById("lblGst");
+        const lblGrandTotal = document.getElementById("lblGrandTotal");
+        const lblBalanceDue = document.getElementById("lblBalanceDue");
+        
+        function recalculate() {
+            let totalCharges = 0;
+            
+            // Sum all pricing input values
+            const chargeInputs = [
+                "photography_charge", "videography_charge", "drone_charge",
+                "led_wall_charge", "crane_charge", "live_streaming_charge",
+                "photo_frame_charge", "travel_charge", "album_charge"
+            ];
+            
+            chargeInputs.forEach(name => {
+                const el = document.querySelector(`input[name="${name}"]`);
+                if (el && el.value) {
+                    totalCharges += parseFloat(el.value);
+                }
+            });
+            
+            const discEl = document.getElementById("discount");
+            const discount = discEl && discEl.value ? parseFloat(discEl.value) : 0;
+            
+            const paidEl = document.getElementById("paid_amount");
+            const paid = paidEl && paidEl.value ? parseFloat(paidEl.value) : 0;
+            
+            let subtotal = totalCharges - discount;
+            if (subtotal < 0) subtotal = 0;
+            
+            const gstAmount = subtotal * 0.18; // 18% standard GST
+            const grandTotal = subtotal + gstAmount;
+            const balanceDue = grandTotal - paid;
+            
+            lblSubtotal.textContent = subtotal.toFixed(2);
+            lblGst.textContent = gstAmount.toFixed(2);
+            lblGrandTotal.textContent = grandTotal.toFixed(2);
+            lblBalanceDue.textContent = balanceDue.toFixed(2);
+        }
+        
+        calcs.forEach(el => {
+            el.addEventListener("input", recalculate);
+        });
+        
+        recalculate(); // Init on load
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Our Services | Dream Tattoo & Photography{% endblock %}
+
+{% block content %}
+<section class="section-padding bg-black text-center mt-5">
+    <div class="container pt-4">
+        <h1 class="display-4 text-light">Studio <span>Services</span></h1>
+        <p class="text-muted max-width-600 mx-auto">Explore our range of professional photography, videography, and custom tattoo designs. Select a service to book your session.</p>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="section-padding bg-dark">
+    <div class="container">
+        
+        <!-- Category Filter Tab Buttons -->
+        <div class="d-flex justify-content-center flex-wrap mb-5">
+            <button class="gallery-filter-btn active" data-filter="all">All Services</button>
+            <button class="gallery-filter-btn" data-filter="Photography">Photography</button>
+            <button class="gallery-filter-btn" data-filter="Tattoo">Tattoos</button>
+        </div>
+
+        <div class="row g-4 gallery-grid">
+            {% for service in services %}
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="{{ service.category }}">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3">
+                            <i class="bi {{ service.icon_class }}"></i>
+                        </div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">{{ service.name }}</h3>
+                        <p class="text-muted small mb-4">{{ service.description }}</p>
+
+                        <div class="mt-auto">
+                            <a href="{% url 'core:book_request' %}?service={{ service.id }}" class="btn btn-gold-outline w-100">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <!-- Hardcoded list as backup if seed data hasn't run yet -->
+                <div class="col-12 text-center py-4">
+                    <p class="text-muted">Populating studio services from database... showing catalog below:</p>
+                </div>
+                <!-- Standard Wedding Photography -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Photography">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3"><i class="bi bi-heart-fill"></i></div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">Wedding Photography</h3>
+                        <p class="text-muted small mb-4">Cinematic cover of your wedding day with high-end camera setups and complete retouching.</p>
+
+                        <a href="{% url 'core:book_request' %}?service_name=Wedding+Photography" class="btn btn-gold-outline w-100">Book Now</a>
+                    </div>
+                </div>
+                <!-- Pre-Wedding Shoot -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Photography">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3"><i class="bi bi-camera-reels-fill"></i></div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">Pre-Wedding Shoot</h3>
+                        <p class="text-muted small mb-4">Romantic storytelling shoot at beautiful outdoor or indoor scenic spots.</p>
+
+                        <a href="{% url 'core:book_request' %}?service_name=Pre-Wedding+Shoot" class="btn btn-gold-outline w-100">Book Now</a>
+                    </div>
+                </div>
+                <!-- Custom Tattoo Art -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Tattoo">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3"><i class="bi bi-brush"></i></div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">Tattoo Photography & Designing</h3>
+                        <p class="text-muted small mb-4">Premium skin ink artistry using fully sanitized tools and high-res shoot tracking.</p>
+
+                        <a href="{% url 'core:book_request' %}?service_name=Tattoo+Photography" class="btn btn-gold-outline w-100">Book Now</a>
+                    </div>
+                </div>
+                <!-- Baby Shoot -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Photography">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3"><i class="bi bi-balloon-fill"></i></div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">Baby Shoot</h3>
+                        <p class="text-muted small mb-4">Infant milestones shoot with baby-friendly props and warm temperature studio setup.</p>
+
+                        <a href="{% url 'core:book_request' %}?service_name=Baby+Shoot" class="btn btn-gold-outline w-100">Book Now</a>
+                    </div>
+                </div>
+                <!-- Drone Photography -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Photography">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3"><i class="bi bi-airplane-fill"></i></div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">Drone Photography</h3>
+                        <p class="text-muted small mb-4">Spectacular birds-eye aerial captures of outdoor celebrations and wedding entries.</p>
+
+                        <a href="{% url 'core:book_request' %}?service_name=Drone+Photography" class="btn btn-gold-outline w-100">Book Now</a>
+                    </div>
+                </div>
+                <!-- Candid Photography -->
+                <div class="col-lg-4 col-md-6 gallery-item-container" data-category="Photography">
+                    <div class="glass-panel service-card text-center p-4">
+                        <div class="service-icon-wrapper my-3"><i class="bi bi-emoji-smile-fill"></i></div>
+                        <h3 class="h4 text-light font-weight-bold mb-3">Candid Photography</h3>
+                        <p class="text-muted small mb-4">Capturing spontaneous emotions, smiles, and raw actions without staged poses.</p>
+
+                        <a href="{% url 'core:book_request' %}?service_name=Candid+Photography" class="btn btn-gold-outline w-100">Book Now</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

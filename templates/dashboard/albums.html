@@ -1,0 +1,223 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Album Tracker & Calculator | Dream Studio{% endblock %}
+
+{% block dashboard_title %}
+    <h1>Album Design & Billing</h1>
+    <p>Track production status, print details, and calculate custom client album costs.</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <!-- Album Design Dashboard (8 columns) -->
+    <div class="col-lg-8">
+        <div class="card-dashboard">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-journal-album text-warning me-2"></i> Album Production Queue</h3>
+            
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th class="mobile-toggle-col"></th>
+                            <th>Album Details</th>
+                            <th class="d-mobile-hidden">Client Name</th>
+                            <th class="d-mobile-hidden">Specification</th>
+                            <th class="d-mobile-hidden">Calculated Cost</th>
+                            <th>Design Status</th>
+                            <th class="d-mobile-hidden">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for album in albums %}
+                            <tr class="table-row-parent">
+                                <td class="mobile-toggle-col">
+                                    <i class="bi bi-chevron-down toggle-icon"></i>
+                                </td>
+                                <td>
+                                    <div class="fw-bold">{{ album.album_name }}</div>
+                                    <span class="small text-muted">Created: {{ album.created_at|date:"d M Y" }}</span>
+                                </td>
+                                <td class="d-mobile-hidden">{{ album.client_name }}</td>
+                                <td class="d-mobile-hidden">
+                                    <div>{{ album.album_type }} ({{ album.album_size }})</div>
+                                    <span class="small text-muted">{{ album.pages }} Pages / {{ album.sheets }} Sheets</span>
+                                    {% if album.extra_pages > 0 %}
+                                        <div class="small text-warning">+{{ album.extra_pages }} Extra Pages</div>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold text-warning d-mobile-hidden">₹{{ album.total_cost|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge badge-custom 
+                                        {% if album.design_status == 'Pending' %}badge-pending
+                                        {% elif album.design_status == 'Designing' %}badge-designing
+                                        {% elif album.design_status == 'Completed' %}badge-completed
+                                        {% else %}badge-delivered{% endif %}">
+                                        {{ album.design_status }}
+                                    </span>
+                                </td>
+                                <td class="d-mobile-hidden">
+                                    <!-- Simple Form to Update Status -->
+                                    <form method="POST" action="{% url 'dashboard:album_edit' album.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <select name="design_status" class="form-select form-control-custom py-1 d-inline-block" style="font-size: 0.8rem; width: auto;" onchange="this.form.submit()">
+                                            <option value="Pending" {% if album.design_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Designing" {% if album.design_status == 'Designing' %}selected{% endif %}>Designing</option>
+                                            <option value="Completed" {% if album.design_status == 'Completed' %}selected{% endif %}>Completed</option>
+                                            <option value="Delivered" {% if album.design_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr class="detail-row">
+                                <td colspan="10">
+                                    <div class="detail-content p-3 rounded">
+                                        <div class="mb-2"><strong>Client:</strong> {{ album.client_name }}</div>
+                                        <div class="mb-2">
+                                            <strong>Specifications:</strong>
+                                            {{ album.album_type }} ({{ album.album_size }}) - {{ album.pages }} Pages / {{ album.sheets }} Sheets
+                                        </div>
+                                        <div class="mb-3"><strong>Calculated Price:</strong> <span class="text-warning fw-bold">₹{{ album.total_cost|floatformat:2 }}</span></div>
+                                        
+                                        <!-- Design Status Update on Mobile -->
+                                        <div class="p-2 bg-black bg-opacity-20 rounded border border-secondary border-opacity-20 d-inline-block">
+                                            <form method="POST" action="{% url 'dashboard:album_edit' album.id %}" class="d-flex align-items-center gap-2">
+                                                {% csrf_token %}
+                                                <label class="form-label form-label-dashboard m-0" style="font-size: 0.8rem;">Design Status:</label>
+                                                <select name="design_status" class="form-select form-control-custom py-1" style="font-size: 0.8rem; width: auto;" onchange="this.form.submit()">
+                                                    <option value="Pending" {% if album.design_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                    <option value="Designing" {% if album.design_status == 'Designing' %}selected{% endif %}>Designing</option>
+                                                    <option value="Completed" {% if album.design_status == 'Completed' %}selected{% endif %}>Completed</option>
+                                                    <option value="Delivered" {% if album.design_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">No albums in production queue.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Album Cost Calculator (4 columns) -->
+    <div class="col-lg-4">
+        <div class="card-dashboard">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-calculator text-warning me-2"></i> Album Calculator</h3>
+            
+            <form id="albumCalcForm" method="POST" action="{% url 'dashboard:album_add' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Album Name / Project Code</label>
+                    <input type="text" name="album_name" class="form-control form-control-dashboard" placeholder="e.g. Rahul Wedding Album" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Client Name</label>
+                    <input type="text" name="client_name" class="form-control form-control-dashboard" placeholder="Customer Name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Album Tier</label>
+                    <select id="album_type" name="album_type" class="form-select form-control-custom calc-trigger">
+                        <option value="Regular Album" data-base="3000">Regular Album</option>
+                        <option value="Premium Album" data-base="5000" selected>Premium Album</option>
+                        <option value="Luxury Album" data-base="8000">Luxury Album</option>
+                    </select>
+                </div>
+                
+                <input type="hidden" name="cover_type" value="Leather Cover">
+                
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Album Size</label>
+                    <input type="text" name="album_size" class="form-control form-control-dashboard" value="12x36" placeholder="e.g. 12x36, 12x18">
+                </div>
+
+                <!-- Custom parameters -->
+                <div class="glass-panel p-3 mb-4">
+                    <div class="mb-3">
+                        <label class="form-label form-label-dashboard">Price (₹)</label>
+                        <input type="number" id="base_price" name="base_price" class="form-control form-control-dashboard calc-trigger" value="5000" required>
+                    </div>
+
+                    <input type="hidden" id="extra_pages" name="extra_pages" value="0">
+
+                    <div class="mb-3">
+                        <label class="form-label form-label-dashboard">Page Count</label>
+                        <select id="pages" name="pages" class="form-select form-control-custom calc-trigger">
+                            <option value="10">10 Pages</option>
+                            <option value="20">20 Pages</option>
+                            <option value="30" selected>30 Pages</option>
+                            <option value="40">40 Pages</option>
+                            <option value="50">50 Pages</option>
+                            <option value="60">60 Pages</option>
+                            <option value="70">70 Pages</option>
+                            <option value="80">80 Pages</option>
+                            <option value="90">90 Pages</option>
+                            <option value="100">100 Pages</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mt-3 border-top border-secondary pt-3 text-center">
+                        <div class="text-muted small">Estimated Sheets: <span id="calcSheets">15</span> sheets</div>
+                        <div class="text-muted small">Total Pages: <span id="calcTotalPages">30</span> pages</div>
+                        <div class="h4 text-warning fw-bold mt-2 mb-0">Total: ₹<span id="calcTotalCost">0.00</span></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-gold w-100 py-2">Add to Production Log</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const typeEl = document.getElementById("album_type");
+        const baseEl = document.getElementById("base_price");
+        const pagesEl = document.getElementById("pages");
+        
+        const calcSheets = document.getElementById("calcSheets");
+        const calcTotalPages = document.getElementById("calcTotalPages");
+        const calcTotalCost = document.getElementById("calcTotalCost");
+        
+        // Update input defaults when selecting album tier
+        typeEl.addEventListener("change", function() {
+            const opt = this.options[this.selectedIndex];
+            baseEl.value = opt.getAttribute("data-base");
+            
+            // Set default pages matching the tier to make it more user-friendly
+            if (this.value === "Regular Album") {
+                pagesEl.value = "20";
+            } else if (this.value === "Premium Album") {
+                pagesEl.value = "30";
+            } else if (this.value === "Luxury Album") {
+                pagesEl.value = "40";
+            }
+            recalculate();
+        });
+        
+        function recalculate() {
+            const price = parseFloat(baseEl.value) || 0;
+            const totalPages = parseInt(pagesEl.value) || 0;
+            const totalSheets = Math.ceil(totalPages / 2);
+            
+            calcSheets.textContent = totalSheets;
+            calcTotalPages.textContent = totalPages;
+            calcTotalCost.textContent = price.toFixed(2);
+        }
+        
+        document.querySelectorAll(".calc-trigger").forEach(el => {
+            el.addEventListener("input", recalculate);
+            el.addEventListener("change", recalculate);
+        });
+        
+        recalculate(); // Init
+    });
+</script>
+{% endblock %}

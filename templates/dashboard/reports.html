@@ -1,0 +1,124 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Financial Reports | Dream Studio{% endblock %}
+
+{% block dashboard_title %}
+    <h1>Financial Reports & Exports</h1>
+    <p>View net earnings, compute taxes, and download official Excel or PDF sheets.</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Net Summary Cards -->
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="metric-card border-success">
+            <div class="metric-icon"><i class="bi bi-graph-up-arrow text-success"></i></div>
+            <div class="metric-value text-success">₹{{ revenue_total|floatformat:2 }}</div>
+            <div class="metric-label">Invoiced Revenue (Gross)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card border-danger">
+            <div class="metric-icon"><i class="bi bi-graph-down-arrow text-danger"></i></div>
+            <div class="metric-value text-danger">₹{{ expense_total|floatformat:2 }}</div>
+            <div class="metric-label">Logged Overhead Expenses</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card border-warning">
+            <div class="metric-icon"><i class="bi bi-receipt text-warning"></i></div>
+            <div class="metric-value text-warning">₹{{ gst_total|floatformat:2 }}</div>
+            <div class="metric-label">GST Collected (Tax liability)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card border-info">
+            <div class="metric-icon"><i class="bi bi-wallet2 text-info"></i></div>
+            <div class="metric-value text-info">₹{{ net_profit|floatformat:2 }}</div>
+            <div class="metric-label">Estimated Net Profit</div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Controls Panel -->
+<div class="card-dashboard mt-5">
+    <div class="row align-items-center g-3">
+        <div class="col-md-6 col-lg-8">
+            <h3 class="h5 text-light m-0"><i class="bi bi-download text-warning me-2"></i> Export Data Options</h3>
+            <p class="text-muted small m-0 mt-1">Download consolidated reports covering all customers, invoices, and expenses for tax planning and accounting audits.</p>
+        </div>
+        <div class="col-md-6 col-lg-4 text-md-end">
+            <a href="{% url 'dashboard:export_reports_excel' %}" class="btn btn-gold-outline me-2 mb-2 mb-lg-0"><i class="bi bi-file-earmark-excel me-2"></i>Export Excel</a>
+            <a href="{% url 'dashboard:export_reports_pdf' %}" class="btn btn-gold-fill mb-2 mb-lg-0"><i class="bi bi-file-pdf me-2"></i>Export PDF Report</a>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Summary Table -->
+<div class="card-dashboard mt-5">
+    <h3 class="h5 text-light mb-4"><i class="bi bi-arrow-left-right text-warning me-2"></i> Recent Transaction Ledgers</h3>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover table-custom mb-0">
+            <thead>
+                <tr>
+                    <th class="mobile-toggle-col"></th>
+                    <th class="d-mobile-hidden">Date</th>
+                    <th class="d-mobile-hidden">Type</th>
+                    <th>Reference / Details</th>
+                    <th>Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in transactions %}
+                    <tr class="table-row-parent">
+                        <td class="mobile-toggle-col text-center">
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </td>
+                        <td class="d-mobile-hidden">{{ item.date|date:"d M Y" }}</td>
+                        <td class="d-mobile-hidden">
+                            {% if item.type == 'INCOMING' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">INCOMING (Billed)</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">OUTGOING (Expense)</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ item.title }}</div>
+                            <span class="small text-muted d-none d-md-inline">{{ item.subtitle|default:"No secondary information" }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold {% if item.type == 'INCOMING' %}text-success{% else %}text-danger{% endif %}">
+                                {% if item.type == 'INCOMING' %}+{% else %}-{% endif %}₹{{ item.amount|floatformat:2 }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td colspan="5">
+                            <div class="detail-content p-3">
+                                <div class="row g-2">
+                                    <div class="col-6"><strong>Date:</strong> {{ item.date|date:"d M Y" }}</div>
+                                    <div class="col-6">
+                                        <strong>Type:</strong>
+                                        {% if item.type == 'INCOMING' %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">INCOMING</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">OUTGOING</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if item.subtitle %}
+                                        <div class="col-12 mt-2"><strong>Details:</strong> {{ item.subtitle }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">No transactions recorded.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+Place your custom gallery and asset images inside this folder (e.g. gallery1.jpg, gallery2.jpg, tattoo1.jpg, etc.).
+You can then reference them inside your HTML files using {% static 'img/your_file.jpg' %}.

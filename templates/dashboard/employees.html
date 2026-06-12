@@ -1,0 +1,117 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Employees | Dream Studio{% endblock %}
+
+{% block dashboard_title %}
+    <h1>Employee Management</h1>
+    <p>Track studio staff roster, assigned roles, contact details, and payroll.</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <!-- Employee Roster List (8 columns) -->
+    <div class="col-lg-8">
+        <div class="card-dashboard">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-person-workspace text-warning me-2"></i> Staff Roster</h3>
+            
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom mb-0">
+                    <thead>
+                        <tr>
+                            <th class="mobile-toggle-col"></th>
+                            <th>Staff Name</th>
+                            <th>Role</th>
+                            <th class="d-mobile-hidden">Contact</th>
+                            <th class="d-mobile-hidden">Monthly Salary</th>
+                            <th class="d-mobile-hidden">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                            <tr class="table-row-parent">
+                                <td class="mobile-toggle-col">
+                                    <i class="bi bi-chevron-down toggle-icon"></i>
+                                </td>
+                                <td class="fw-bold">{{ emp.name }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ emp.role }}</span>
+                                </td>
+                                <td class="d-mobile-hidden">{{ emp.contact_number }}</td>
+                                <td class="text-warning fw-bold d-mobile-hidden">₹{{ emp.salary|floatformat:2 }}</td>
+                                <td class="d-mobile-hidden">
+                                    <span class="badge badge-custom {% if emp.status == 'Active' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                        {{ emp.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="detail-row">
+                                <td colspan="10">
+                                    <div class="detail-content p-3 rounded">
+                                        <div class="mb-2"><strong>Contact Number:</strong> {{ emp.contact_number }}</div>
+                                        <div class="mb-2"><strong>Monthly Salary:</strong> ₹{{ emp.salary|floatformat:2 }}</div>
+                                        <div>
+                                            <strong>Status:</strong>
+                                            <span class="badge badge-custom {% if emp.status == 'Active' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                                {{ emp.status }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">No employees registered yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Employee Form (4 columns) -->
+    <div class="col-lg-4">
+        <div class="card-dashboard">
+            <h3 class="h5 text-light mb-4"><i class="bi bi-person-plus text-warning me-2"></i> Register Employee</h3>
+            
+            <form method="POST" action="{% url 'dashboard:employee_add' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Full Name</label>
+                    <input type="text" name="name" class="form-control form-control-dashboard" placeholder="Enter staff name" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Role / Function</label>
+                    <select name="role" class="form-select form-control-custom" required>
+                        <option value="Photographer">Photographer</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Designer">Designer</option>
+                        <option value="Manager">Manager</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Monthly Salary (₹)</label>
+                    <input type="number" name="salary" class="form-control form-control-dashboard" placeholder="e.g. 25000" min="0" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label form-label-dashboard">Contact Number</label>
+                    <input type="tel" name="contact_number" class="form-control form-control-dashboard" placeholder="Mobile phone" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label form-label-dashboard">Working Status</label>
+                    <select name="status" class="form-select form-control-custom">
+                        <option value="Active" selected>Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-gold w-100 py-2">Save Staff Details</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
