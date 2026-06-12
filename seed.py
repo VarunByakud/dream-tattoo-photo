@@ -25,6 +25,17 @@ def seed_db():
     else:
         print("Admin user already exists.")
         
+    if not User.objects.filter(username='dreamstudio').exists():
+        dream_user = User.objects.create_superuser('dreamstudio', 'dreamoftatoo04@gmail.com', 'varunchaitu@2026')
+        profile = dream_user.profile
+        profile.role = 'Admin'
+        profile.mobile = '7338668173'
+        profile.address = 'Dream Photography, Near police station, Mudalgi, Karnataka'
+        profile.save()
+        print("dreamstudio superuser created successfully! (Username: dreamstudio, Password: varunchaitu@2026)")
+    else:
+        print("dreamstudio superuser already exists.")
+        
     # 2. Create Staff User
     if not User.objects.filter(username='staff').exists():
         staff_user = User.objects.create_user('staff', 'dreamoftatoo04@gmail.com', 'staffpassword123')
